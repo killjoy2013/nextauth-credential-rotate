@@ -111,29 +111,8 @@ const DrawerPart: React.FC<DrawerPartType> = (props: DrawerPartType) => {
       >
         <Grid item>
           <List>
-            <ListItem onClick={() => router.push('/countries')}>
-              <Typography variant="caption">Countries</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/add-country')}>
-              <Typography variant="caption">Add Country</Typography>
-            </ListItem>
             <ListItem onClick={() => router.push('/cities')}>
               <Typography variant="caption">Cities</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/add-city')}>
-              <Typography variant="caption">Add City</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/my-client-page')}>
-              <Typography variant="caption">Client Page</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/other-client-page')}>
-              <Typography variant="caption">Other Client Page</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/my-static-page')}>
-              <Typography variant="caption">Static Page</Typography>
-            </ListItem>
-            <ListItem onClick={() => router.push('/other-static-page')}>
-              <Typography variant="caption">Other Static Page</Typography>
             </ListItem>
           </List>
         </Grid>

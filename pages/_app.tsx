@@ -26,8 +26,6 @@ function MyApp({
   pageProps,
   emotionCache = clientSideEmotionCache,
 }: MyAppProps) {
-  const client = useApollo(pageProps.token, pageProps.initialApolloState);
-
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -38,17 +36,15 @@ function MyApp({
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <Provider session={pageProps.session}>
-          <ApolloProvider client={client}>
-            {landingPages.includes(router.pathname) && (
-              <Component {...pageProps} />
-            )}
+          {landingPages.includes(router.pathname) && (
+            <Component {...pageProps} />
+          )}
 
-            {!landingPages.includes(router.pathname) && (
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            )}
-          </ApolloProvider>
+          {!landingPages.includes(router.pathname) && (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          )}
         </Provider>
       </ThemeProvider>
     </CacheProvider>
