@@ -1,11 +1,11 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from 'db/prisma';
 import jsonwebtoken from 'jsonwebtoken';
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextAuth from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { signOut } from 'next-auth/react';
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from 'db/prisma';
 
 async function authenticate(username: string, password: string) {
   return new Promise((resolve, reject) => {
@@ -220,8 +220,7 @@ const nextAuthOptions = (req: NextApiRequest, res: NextApiResponse) => {
             throw new Error('enter username or password');
           }
           try {
-            let dell = await createToken(username);
-            return dell;
+            return await createToken(username);
           } catch (error) {
             console.log(error);
             throw new Error('Authentication error');

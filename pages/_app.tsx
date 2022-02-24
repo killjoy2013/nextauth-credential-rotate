@@ -1,16 +1,14 @@
-import 'styles/global.css';
-import { ApolloProvider } from '@apollo/client';
+import { CacheProvider, EmotionCache } from '@emotion/react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import Layout from 'components/layout';
 import { SessionProvider } from 'next-auth/react';
-import { useApollo } from 'src/apollo';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider, EmotionCache } from '@emotion/react';
-import createEmotionCache from 'styles/createEmotionCache';
-import theme from 'styles/theme';
 import React from 'react';
-import Layout from 'components/layout';
+import createEmotionCache from 'styles/createEmotionCache';
+import 'styles/global.css';
+import theme from 'styles/theme';
 
 const clientSideEmotionCache = createEmotionCache();
 

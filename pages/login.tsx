@@ -1,7 +1,6 @@
 import AuthForm from 'components/auth/auth-form';
-import { getSession } from 'next-auth/react';
-import { GetServerSidePropsContext } from 'next';
 import { getToken } from 'next-auth/jwt';
+import { getSession } from 'next-auth/react';
 
 const Login = () => {
   return <AuthForm />;

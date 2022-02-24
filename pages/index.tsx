@@ -1,21 +1,14 @@
-import { getSession, useSession } from 'next-auth/react';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
-import { GetServerSidePropsContext } from 'next';
 import { getToken } from 'next-auth/jwt';
+import { getSession } from 'next-auth/react';
+import React from 'react';
 
 const Homepage = () => {
-  const [token, setToken] = useState<string>('');
-
-  const { data: session, status } = useSession();
-
   return (
     <Grid container direction="column" justifyContent="space-between">
       <Grid item>
         <>
-          <Typography variant="h4">Home Page</Typography>
-          <Typography variant="h6">tokennnn</Typography>
+          <h1>Home Page</h1>
         </>
       </Grid>
     </Grid>

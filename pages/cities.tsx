@@ -1,40 +1,22 @@
-import { NormalizedCache } from '@apollo/client';
-import DeleteIcon from '@mui/icons-material/Delete';
-import {
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import MyAlert from 'components/alert';
-import { GetServerSidePropsContext } from 'next';
+import DisplayObject from 'components/jsonviewer';
 import { Session } from 'next-auth';
-import { getSession } from 'next-auth/react';
 import { getToken } from 'next-auth/jwt';
-import React, { FC, useEffect } from 'react';
-import { initializeApollo } from 'src/apollo';
-import { alertMessageVar } from 'src/cache';
-import { Queries } from 'src/gql_definitions/queries';
-import {
-  CitiesQuery,
-  useCitiesQuery,
-  useRemoveCityMutation,
-} from 'src/graphql/types';
+import { getSession } from 'next-auth/react';
+import React, { FC } from 'react';
 
 type CitiesType = {
-  initialApolloState: NormalizedCache;
-  alertMessage: string;
   session: Session;
+  token: string;
 };
 
 const Cities: FC<CitiesType> = (props) => {
-  const { session } = props;
+  const { session, token } = props;
 
   return (
     <>
       <h1>Cities</h1>
+      <DisplayObject {...session}></DisplayObject>
+      <h3>{token}</h3>
     </>
   );
 };
@@ -57,8 +39,15 @@ export async function getServerSideProps({ req }: { req: any }) {
     raw: true,
   });
 
+  console.log(`city ssr token on ${new Date().toLocaleTimeString()}`, {
+    token,
+  });
+
   return {
-    props: {},
+    props: {
+      session,
+      token,
+    },
   };
 }
 
