@@ -1,6 +1,6 @@
 import 'styles/global.css';
 import { ApolloProvider } from '@apollo/client';
-import { Provider } from 'next-auth/client';
+import { SessionProvider } from 'next-auth/react';
 import { useApollo } from 'src/apollo';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -35,7 +35,7 @@ function MyApp({
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Provider session={pageProps.session}>
+        <SessionProvider session={pageProps.session}>
           {landingPages.includes(router.pathname) && (
             <Component {...pageProps} />
           )}
@@ -45,7 +45,7 @@ function MyApp({
               <Component {...pageProps} />
             </Layout>
           )}
-        </Provider>
+        </SessionProvider>
       </ThemeProvider>
     </CacheProvider>
   );

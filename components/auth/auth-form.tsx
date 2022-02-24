@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { signIn } from 'next-auth/client';
+import { signIn } from 'next-auth/react';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useState } from 'react';
 

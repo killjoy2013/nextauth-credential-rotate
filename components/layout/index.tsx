@@ -1,5 +1,5 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { useSession, signOut } from 'next-auth/client';
+import { useSession, signOut } from 'next-auth/react';
 import {
   AppBar,
   Button,
@@ -85,7 +85,7 @@ type DrawerPartType = {
 const DrawerPart: React.FC<DrawerPartType> = (props: DrawerPartType) => {
   const { open } = props;
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
 
   const logoutHandler = () => {
     signOut();
@@ -156,7 +156,7 @@ const PersistentDrawer: React.FC<PersistentDrawerType> = (
   props: PersistentDrawerType
 ) => {
   const [open, setOpen] = useState(true);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
 
   const handleDrawerToggle = () => {
     setOpen(!open);

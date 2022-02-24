@@ -11,7 +11,7 @@ import {
 import MyAlert from 'components/alert';
 import { GetServerSidePropsContext } from 'next';
 import { Session } from 'next-auth';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import { getToken } from 'next-auth/jwt';
 import React, { FC, useEffect } from 'react';
 import { initializeApollo } from 'src/apollo';
