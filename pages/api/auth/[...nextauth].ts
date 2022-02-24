@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import jsonwebtoken from 'jsonwebtoken';
 import { JWT } from 'next-auth/jwt';
+import { signOut } from 'next-auth/react';
 
 async function authenticate(username: string, password: string) {
   return new Promise((resolve, reject) => {
@@ -11,6 +12,62 @@ async function authenticate(username: string, password: string) {
         password,
       });
     });
+  });
+}
+
+async function refreshToken(oldToken: JWT): Promise<any> {
+  let returnValue: any;
+  return new Promise(async (resolve, reject) => {
+    let username = oldToken.username as string;
+
+    console.log(
+      `${username} token will refresh on ${new Date().toLocaleTimeString()}`
+    );
+
+    try {
+      let user = await prisma.user.findFirst({
+        where: {
+          username,
+        },
+      });
+
+      if (!user || !user.refreshToken) {
+        signOut();
+        reject(`${username} not found or refresh token is empty!`);
+      }
+
+      const verified = jsonwebtoken.verify(
+        user.refreshToken,
+        process.env.TOKEN_SECRET
+      ) as JWT;
+
+      const claims = {
+        username,
+      };
+
+      const newRefreshToken = jsonwebtoken.sign(
+        claims,
+        process.env.TOKEN_SECRET,
+        {
+          expiresIn: parseInt(process.env.TOKEN_MAX_AGE),
+          algorithm: 'HS512',
+        }
+      );
+
+      await prisma.user.update({
+        where: {
+          username,
+        },
+        data: {
+          refreshToken: newRefreshToken,
+        },
+      });
+
+      resolve({ claims });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
   });
 }
 
@@ -32,10 +89,17 @@ export default NextAuth({
       return encodedToken;
     },
     async decode(data: any) {
-      const { secret, token, maxAge } = data;
-      const verify = jsonwebtoken.verify(token, secret) as JWT;
+      const { secret, token } = data;
+      let verifiedJwt: any = null;
 
-      return verify;
+      try {
+        verifiedJwt = jsonwebtoken.verify(token, secret) as JWT;
+      } catch (error) {
+        console.log(
+          `decode failed on ${new Date().toLocaleTimeString()}, token refresh needed!`
+        );
+      }
+      return verifiedJwt;
     },
   },
   session: {
