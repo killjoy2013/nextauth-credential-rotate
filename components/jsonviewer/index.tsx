@@ -6,7 +6,7 @@ const DisplayObject = (obj: any) => (
     <pre
       style={{
         background: '#f6f8fa',
-        fontSize: '.65rem',
+        fontSize: '.9rem',
         padding: '.5rem',
       }}
     >

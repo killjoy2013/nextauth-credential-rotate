@@ -1,7 +1,8 @@
 import DisplayObject from 'components/jsonviewer';
 import { Session } from 'next-auth';
-import { getToken } from 'next-auth/jwt';
+import { getToken, JWT, JWTDecodeParams } from 'next-auth/jwt';
 import { getSession } from 'next-auth/react';
+import jsonwebtoken from 'jsonwebtoken';
 import React, { FC } from 'react';
 
 type CitiesType = {
@@ -15,14 +16,23 @@ const Cities: FC<CitiesType> = (props) => {
   return (
     <>
       <h1>Cities</h1>
-      <DisplayObject {...session}></DisplayObject>
-      <h3>{token}</h3>
+      {/* <DisplayObject {...session}></DisplayObject>
+      <h3>{token}</h3> */}
     </>
   );
 };
 
 export async function getServerSideProps({ req }: { req: any }) {
+  // const session = await getSession({
+  //   req,
+  //   broadcast: true,
+  //   triggerEvent: true,
+  //   event: 'visibilitychange',
+  // });
+
   const session = await getSession({ req });
+
+  // console.log({ session });
 
   if (!session) {
     return {
