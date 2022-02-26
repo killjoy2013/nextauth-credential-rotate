@@ -37,6 +37,8 @@ export default NextAuth({
           expiresIn: parseInt(process.env.TOKEN_REFRESH_PERIOD),
           algorithm: 'HS512',
         });
+
+        console.log({ encodedToken });
       } else {
         console.log('TOKEN EMPTY. SO, LOGOUT!...');
         return '';
