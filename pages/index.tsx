@@ -1,7 +1,9 @@
 import Grid from '@mui/material/Grid';
+import { getServerSession } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { getSession } from 'next-auth/react';
 import React from 'react';
+import { authOptions } from './api/auth/[...nextauth]';
 
 const Homepage = () => {
   return (
@@ -15,8 +17,14 @@ const Homepage = () => {
   );
 };
 
-export async function getServerSideProps({ req }: { req: any }) {
-  const session = await getSession({ req });
+export async function getServerSideProps(ctx) {
+  //const session = await getSession(ctx);
+
+  const { req } = ctx;
+
+  const session = await getServerSession(ctx, authOptions);
+
+  // console.log({ session });
 
   if (!session) {
     return {
@@ -31,6 +39,10 @@ export async function getServerSideProps({ req }: { req: any }) {
     req,
     secret: process.env.TOKEN_SECRET,
     raw: true,
+  });
+
+  console.log(`index ssr token on ${new Date().toLocaleTimeString()}`, {
+    token,
   });
 
   return {
