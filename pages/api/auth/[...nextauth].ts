@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import { JWT, JWTEncodeParams, JWTDecodeParams } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import jsonwebtoken from 'jsonwebtoken';
+import { prisma } from 'db/prisma';
 
 const defaultToken = {
   name: '',
@@ -16,12 +17,24 @@ function createToken(username: string) {
     accessTokenExpires:
       Date.now() + parseInt(process.env.TOKEN_REFRESH_PERIOD) * 1000,
   };
-
-  //return { data };
 }
 
-function refreshToken(token) {
-  const { iat, exp, ...others } = token;
+async function refreshToken(token) {
+  const { exp, iat, ...others } = token;
+
+  const newRefreshToken = jsonwebtoken.sign(others, process.env.TOKEN_SECRET, {
+    expiresIn: parseInt(process.env.TOKEN_MAX_AGE),
+    algorithm: 'HS512',
+  });
+
+  await prisma.user.update({
+    where: {
+      username: token.username,
+    },
+    data: {
+      refreshToken: newRefreshToken,
+    },
+  });
 
   return {
     ...others,
@@ -35,33 +48,28 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     secret: process.env.TOKEN_SECRET,
     maxAge: parseInt(process.env.TOKEN_MAX_AGE),
-    // encode: async (params: JWTEncodeParams): Promise<string> => {
-    //   const { secret, token } = params;
-    //   let encodedToken = '';
-    //   if (token) {
-    //     const jwtClaims = {
-    //       username: token.username,
-    //       accessTokenExpires: token.accessTokenExpires,
-    //     };
+    encode: async (params: JWTEncodeParams): Promise<string> => {
+      const { secret, token } = params;
+      let encodedToken = '';
+      if (token) {
+        const { exp, iat, ...rest } = token;
 
-    //     encodedToken = jsonwebtoken.sign(jwtClaims, secret, {
-    //       expiresIn: parseInt(process.env.TOKEN_REFRESH_PERIOD),
-    //       algorithm: 'HS512',
-    //     });
+        encodedToken = jsonwebtoken.sign(rest, secret, {
+          expiresIn: parseInt(process.env.TOKEN_REFRESH_PERIOD),
+          algorithm: 'HS512',
+        });
+      } else {
+        console.log('TOKEN EMPTY. SO, LOGOUT!...');
+        return '';
+      }
+      return encodedToken;
+    },
+    decode: async (params: JWTDecodeParams) => {
+      const { token, secret } = params;
+      const decoded = jsonwebtoken.decode(token);
 
-    //     console.log({ encodedToken });
-    //   } else {
-    //     console.log('TOKEN EMPTY. SO, LOGOUT!...');
-    //     return '';
-    //   }
-    //   return encodedToken;
-    // },
-    // decode: async (params: JWTDecodeParams) => {
-    //   const { token, secret } = params;
-    //   const decoded = jsonwebtoken.decode(token);
-
-    //   return { ...(decoded as JWT) };
-    // },
+      return { ...(decoded as JWT) };
+    },
   },
   session: {
     maxAge: parseInt(process.env.TOKEN_MAX_AGE),
@@ -71,13 +79,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
-        token = createToken(user.username as string);
-
-        let finalToken = {
-          ...token,
-        };
-
-        return finalToken;
+        return { ...user };
       }
 
       let left = ((token.accessTokenExpires as number) - Date.now()) / 1000;
@@ -91,7 +93,7 @@ export const authOptions: NextAuthOptions = {
         return token;
       } else {
         let newToken = await refreshToken(token);
-        return { ...newToken };
+        return newToken;
       }
     },
     async session({ session, token }) {
@@ -117,6 +119,7 @@ export const authOptions: NextAuthOptions = {
         try {
           let token = createToken(username);
           return token;
+          //return { username };
         } catch (error) {
           console.log(error);
           throw new Error('Authentication error');
